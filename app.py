@@ -44,7 +44,7 @@ class InstagramScraper:
 
         try:
             os.makedirs(self.dst)
-        except OSError, e:
+        except OSError as e:
             if e.errno == errno.EEXIST and os.path.isdir(self.dst):
                 # Directory already exists
                 pass
@@ -66,8 +66,10 @@ class InstagramScraper:
         self.session.headers.update({'X-CSRFToken': req.cookies['csrftoken']})
 
         login_data = {'username': self.login_user, 'password': self.login_pass}
-        login = self.session.post(self.login_url, data=login_data, allow_redirects=True)
-        self.session.headers.update({'X-CSRFToken': login.cookies['csrftoken']})
+        login = self.session.post(
+            self.login_url, data=login_data, allow_redirects=True)
+        self.session.headers.update(
+            {'X-CSRFToken': login.cookies['csrftoken']})
         self.csrf_token = login.cookies['csrftoken']
 
         if login.status_code == 200 and json.loads(login.text)['authenticated']:
@@ -99,10 +101,10 @@ class InstagramScraper:
             item = scraper.future_to_item[future]
 
             if future.exception() is not None:
-                print '%r generated an exception: %s' % (item['id'], future.exception())
+                print('%r generated an exception: %s' %
+                      (item['id'], future.exception()))
 
         scraper.logout()
-
 
     def media_gen(self):
         """Generator of all user's media"""
@@ -142,7 +144,8 @@ class InstagramScraper:
     def download(self, item, save_dir='./'):
         """Downloads the media file"""
 
-        item['url'] = item[item['type'] + 's']['standard_resolution']['url'].split('?')[0]
+        item['url'] = item[
+            item['type'] + 's']['standard_resolution']['url'].split('?')[0]
         # remove dimensions to get largest image
         item['url'] = re.sub(r'/s\d{3,}x\d{3,}/', '/', item['url'])
 
@@ -179,5 +182,6 @@ if __name__ == '__main__':
         parser.print_help()
         raise ValueError('Must provide login user AND password')
 
-    scraper = InstagramScraper(args.username, args.login_user, args.login_pass, args.destination)
+    scraper = InstagramScraper(
+        args.username, args.login_user, args.login_pass, args.destination)
     scraper.scrape()

@@ -1,3 +1,5 @@
 venv
 *.pyc
 wadl.xml
+.python-version
+.DS_Store
